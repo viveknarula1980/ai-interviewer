@@ -51,10 +51,10 @@ export default function RegisterPage() {
 
         <button 
           type="button"
-          onClick={() => signIn("google")}
-          className="w-full flex border border-white/20 rounded-lg p-3 hover:bg-white/10 cursor-pointer justify-center mb-6 transition"
+          onClick={() => signIn('google', { callbackUrl: '/profile' })} 
+          className="w-full flex border border-white/20 rounded-xl p-4 hover:bg-white/10 cursor-pointer justify-center mb-6 transition items-center gap-3 bg-white/5 active:scale-95 shadow-lg"
         >
-           <span className="font-semibold cursor-pointer">Continue with Google</span>
+           <span className="font-bold">Continue with Google</span>
         </button>
 
         <div className="flex items-center my-6">

@@ -1,7 +1,11 @@
 import Link from "next/link";
-import { BrainCircuit, Code, Database, Cpu, Users, Layout, TrendingUp } from "lucide-react";
+import { BrainCircuit, Code, Database, Cpu, Users, Layout, TrendingUp, User, History } from "lucide-react";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/authOptions";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const session = await getServerSession(authOptions);
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-8 text-center sm:p-24 relative overflow-hidden">
       <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-blue-600/20 blur-[120px] rounded-full pointer-events-none" />
@@ -19,18 +23,37 @@ export default function HomePage() {
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 w-full justify-center mb-16">
-          <Link 
-            href="/auth/register" 
-            className="rounded-xl bg-blue-600 px-10 py-4 font-bold text-white shadow-lg hover:bg-blue-500 transition border border-blue-500/50 hover:shadow-blue-500/25 shadow-[0_0_20px_rgba(37,99,235,0.2)]"
-          >
-            Sign Up Now
-          </Link>
-          <Link 
-            href="/interview/setup" 
-            className="rounded-xl bg-white/5 px-10 py-4 font-bold text-white hover:bg-white/10 transition border border-white/10 backdrop-blur-md"
-          >
-            Start Practice
-          </Link>
+          {session ? (
+            <>
+              <Link 
+                href="/profile" 
+                className="rounded-xl bg-blue-600 px-10 py-4 font-bold text-white shadow-lg hover:bg-blue-500 transition border border-blue-500/50 flex items-center gap-2 group"
+              >
+                <User size={20} className="group-hover:scale-110 transition"/> Go to Profile
+              </Link>
+              <Link 
+                href="/history" 
+                className="rounded-xl bg-white/5 px-10 py-4 font-bold text-white hover:bg-white/10 transition border border-white/10 backdrop-blur-md flex items-center gap-2 group"
+              >
+                <History size={20} className="group-hover:rotate-12 transition"/> View History
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link 
+                href="/auth/register" 
+                className="rounded-xl bg-blue-600 px-10 py-4 font-bold text-white shadow-lg hover:bg-blue-500 transition border border-blue-500/50 hover:shadow-blue-500/25 shadow-[0_0_20px_rgba(37,99,235,0.2)]"
+              >
+                Sign Up Now
+              </Link>
+              <Link 
+                href="/interview/setup" 
+                className="rounded-xl bg-white/5 px-10 py-4 font-bold text-white hover:bg-white/10 transition border border-white/10 backdrop-blur-md"
+              >
+                Start Practice
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Subject Preview Section - New Addition */}
