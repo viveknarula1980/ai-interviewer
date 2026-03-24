@@ -1,0 +1,84 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                 String    @id @default(cuid())
+  name               String?
+  email              String?   @unique
+  emailVerified      DateTime?
+  image              String?
+  password           String?
+  resetToken         String?
+  resetTokenExpiry   DateTime?
+  resumes            Resume[]
+  sessions           Session[]
+  accounts           Account[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([provider, providerAccountId])
+}
+
+model Resume {
+  id           String   @id @default(cuid())
+  userId       String
+  fileName     String
+  fileUrl      String
+  parsedText   String   @db.Text
+  uploadedAt   DateTime @default(now())
+
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Session {
+  id             String   @id @default(cuid())
+  userId         String
+  mode           String   // Subject-Based or Resume-Based
+  subject        String
+  difficulty     String
+  overallScore   Int?
+  summary        String?  @db.Text
+  topStrengths   String?  @db.Text   // JSON array string
+  topImprovements String? @db.Text   // JSON array string
+  createdAt      DateTime @default(now())
+  completedAt    DateTime?
+
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  qaPairs        QAPair[]
+}
+
+model QAPair {
+  id              String   @id @default(cuid())
+  sessionId       String
+  question        String   @db.Text
+  userTranscript  String   @db.Text
+  aiFeedback      String   @db.Text
+  modelAnswer     String   @db.Text
+  scoreClarity    Int?
+  scoreDepth      Int?
+  scoreRelevance  Int?
+  scoreStructure  Int?
+  orderIndex      Int      // 1 to 5
+
+  session         Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
