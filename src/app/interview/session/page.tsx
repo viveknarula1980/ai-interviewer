@@ -7,6 +7,7 @@ import {
   Loader2, Keyboard, Send, Volume2, Sparkles, AlertCircle
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 
 function InterviewSessionContent() {
   const router = useRouter();
@@ -96,7 +97,8 @@ function InterviewSessionContent() {
       }
 
     } catch (err) {
-      setAiText("I encountered a connection error. Please try responding again.");
+      toast.error("I encountered a connection error. Please check your internet.");
+      setAiText("Connection problem. Please try responding again.");
     } finally {
       setIsThinking(false);
     }
@@ -114,7 +116,7 @@ function InterviewSessionContent() {
             rText = data.resumeText;
           }
         } catch (e) {
-          console.error("Failed to fetch resume context.");
+          toast.error("Could not load your resume for contextual questions.");
         }
       }
       getNextQuestion("", 1, rText);
@@ -223,6 +225,7 @@ function InterviewSessionContent() {
         throw new Error("Report generation failed.");
       }
     } catch (err) {
+      toast.error("AI report generation timed out. Your results were saved to history.");
       router.push("/history");
     } finally {
       setSaving(false);

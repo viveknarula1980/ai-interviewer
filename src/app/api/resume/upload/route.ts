@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import { prisma } from "@/lib/prisma";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
+// On Vercel, we avoid disk writes since it is a stateless/read-only environment.
 
 export async function POST(req: NextRequest) {
   try {
@@ -45,12 +44,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Could not extract text from the file. Please try a different file." }, { status: 400 });
     }
 
-    // Save file to disk
-    const uploadDir = path.join(process.cwd(), "uploads");
-    await mkdir(uploadDir, { recursive: true });
-    const filename = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
-    const filepath = path.join(uploadDir, filename);
-    await writeFile(filepath, buffer);
+    // On Vercel/Serverless, we don't save to disk.
+    // We already have the parsedText in the DB, which is enough for the AI logic.
 
     // Get user record
     const user = await prisma.user.findUnique({ where: { email: session.user.email } });
@@ -62,7 +57,7 @@ export async function POST(req: NextRequest) {
       data: {
         userId: user.id,
         fileName: file.name,
-        fileUrl: `/uploads/${filename}`,
+        fileUrl: "database-only",
         parsedText: parsedText.slice(0, 15000), // Cap at 15k chars for Gemini context
       },
     });

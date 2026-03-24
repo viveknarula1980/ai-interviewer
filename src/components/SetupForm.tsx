@@ -6,6 +6,7 @@ import {
   FileText, Cpu, Briefcase, Users, Code, Server, 
   Presentation, Target, Award, BrainCircuit, ShieldAlert 
 } from "lucide-react";
+import { toast } from "sonner";
 
 export default function SetupForm({ hasResume }: { hasResume: boolean }) {
   const router = useRouter();
@@ -25,7 +26,7 @@ export default function SetupForm({ hasResume }: { hasResume: boolean }) {
   ];
 
   const handleStart = () => {
-    if (mode === "subject" && !subject) return alert("Select a subject first!");
+    if (mode === "subject" && !subject) return toast.error("Please select a subject first.");
     
     const params = new URLSearchParams({ mode, difficulty, subject });
     router.push(`/interview/session?${params.toString()}`);
@@ -47,7 +48,7 @@ export default function SetupForm({ hasResume }: { hasResume: boolean }) {
                </button>
                <button 
                  onClick={() => {
-                   if (!hasResume) return alert("Please upload a resume in your profile first!");
+                   if (!hasResume) return toast.error("Please upload a CV in your profile first!");
                    setMode("resume");
                  }}
                  className={`flex-1 py-4 px-6 rounded-xl border-2 transition flex items-center justify-center gap-3 ${mode === "resume" ? "border-purple-500 bg-purple-500/10 font-bold" : "border-white/10 hover:border-white/30 opacity-60"}`}
